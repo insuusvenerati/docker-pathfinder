@@ -2,7 +2,7 @@
 FROM php:7.2-fpm-alpine
 
 COPY --chown=www-data:www-data ./app /usr/share/nginx/html
-COPY ./.docker/php/environment.ini ./.docker/php/pathfinder.ini /usr/share/nginx/html/app/ 
+COPY ./.docker/php/environment.ini ./.docker/php/pathfinder.ini ./.docker/php/routes.ini /usr/share/nginx/html/app/ 
 WORKDIR /usr/share/nginx/html
 RUN apk add --no-cache \
   curl-dev libpng-dev libevent-dev ${PHPIZE_DEPS} git nodejs npm libxml2-dev && \
