@@ -2,6 +2,7 @@ version: "3.7"
 services:
   php-fpm:
     container_name: pathfinder-php-fpm
+    restart: unless-stopped
     build:
       context: .
       dockerfile: .docker/php/Dockerfile
@@ -15,17 +16,18 @@ services:
     build:
       context: .
       dockerfile: ./.docker/nginx/Dockerfile
-    ports:
-      - 8080:80
     networks:
       - web
     labels:
-      - "traefik.frontend.rule=Host:pathfinder.stiforr.tech"
+      - "traefik.http.routers.pathfinder.rule=Host(`example.com`)"
+      - "traefik.http.routers.pathfinder.entrypoints=websecure"
+      - "traefik.http.routers.pathfinder.tls.certresolver=secure"
       - "traefik.docker.network=web"
       - "traefik.port=80"
       - "traefik.enable=true"
   mysql:
     container_name: pathfinder-mysql
+    restart: unless-stopped
     image: mysql:5.7
     volumes:
       - ./.docker/mysql/aa_init.sql:/docker-entrypoint-initdb.d/aa_init.sql
@@ -33,9 +35,10 @@ services:
     networks:
       - web
     environment:
-      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=changeme
   redis:
     container_name: pathfinder-redis
+    restart: unless-stopped
     image: redis:5.0.5-alpine
     volumes:
       - ./.docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
@@ -45,22 +48,19 @@ services:
     command: ["redis-server", "/usr/local/etc/redis/redis.conf", "--appendonly yes"]
   websocket:
     container_name: pathfinder-websocket
+    restart: unless-stopped
     build:
       context: ./.docker/websocket
       dockerfile: Dockerfile
-    ports:
-      - 8020:8020
-      - 8030:8030
-      - 5555:5555
     networks:
       - web
   # Development Only
-  adminer:
-    image: adminer
-    ports:
-      - 8081:8080
-    networks:
-      - web
+  # adminer:
+  #   image: adminer
+  #   ports:
+  #     - 8081:8080
+  #   networks:
+  #     - web
 
 volumes:
   mysql_data:

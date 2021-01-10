@@ -16,22 +16,25 @@ services:
     #   CF_API_EMAIL: ${CF_API_EMAIL}
     #   CF_API_KEY: ${CF_API_KEY}
     command:
-      # - "--log.level=ERROR" # For debugging only
+      - "--log.level=ERROR" # For debugging only
       # - "--api.insecure=true" # Do not enable in production
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       # - "--providers.docker.endpoint=tcp://127.0.0.1:2376" # Production configuration https://docs.docker.com/engine/security/https/#create-a-ca-server-and-client-keys-with-openssl
       # - "--providers.docker.tls.ca=/ca.pem"
       # - "--providers.docker.tls.cert=/cert.pem"
       # - "--providers.docker.tls.key=/key.pem"
-      # - "--certificatesresolvers.secure.acme.httpchallenge=true" # Use this OR dnschallenge not both
-      # - "--certificatesresolvers.secure.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.secure.acme.httpchallenge=true" # Use this OR dnschallenge not both
+      - "--certificatesresolvers.secure.acme.httpchallenge.entrypoint=web"
       # - "--certificatesresolvers.secure.acme.dnschallenge=true"
       # - "--certificatesresolvers.secure.acme.dnschallenge.provider=cloudflare"
       - "--certificatesresolvers.secure.acme.email=" # Optional
       - "--certificatesresolvers.secure.acme.storage=/letsencrypt/acme.json"
+      - "--pilot.token=23b3b847-bc47-4709-8278-45dbd9383a2d"
       # - "--certificatesresolvers.secure.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory" # Use staging while developing
 
 networks:
